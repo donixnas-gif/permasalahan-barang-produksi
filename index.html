@@ -12,6 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
     <style>
         body {
@@ -55,13 +57,15 @@
 
         /* Loading Spinner */
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: #4f46e5; /* indigo-600 */
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #6366f1; /* warna ungu lembut */
             border-radius: 50%;
+            width: 45px;
+            height: 45px;
             animation: spin 1s linear infinite;
         }
+
+
         @keyframes spin {
             to {
                 transform: rotate(360deg);
@@ -72,7 +76,7 @@
 <body class="bg-slate-100 text-slate-800">
 
     <!-- Global Hamburger Button -->
-    <button id="menu-btn-global" class="fixed top-6 left-6 p-2 rounded-lg text-slate-600 hover:bg-slate-200 z-40 transition-colors">
+    <button id="menu-btn-global" class="fixed top-4 left-4 sm:top-6 sm:left-6 p-2 rounded-lg text-slate-600 hover:bg-slate-200 z-40 transition-colors bg-white/50 backdrop-blur-sm shadow-sm border border-slate-200/50">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="3" y1="12" x2="21" y2="12"></line>
             <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -110,12 +114,12 @@
         </div>
     </div>
 
-    <div id="app" class="min-h-screen flex flex-col items-center p-4 pt-20">
+    <div id="app" class="min-h-screen flex flex-col items-center p-2 sm:p-4 pt-20">
 
         <!-- Role Selection View (Hidden by default now) -->
         <div id="role-selection-view" class="hidden w-full max-w-md text-center p-4">
-            <div class="bg-white p-8 sm:p-10 rounded-2xl shadow-2xl">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTo8y1TczYtwOx2zeS3RJVtM6Eayy6CQZuf6Q&s" alt="Logo Shinpo" class="mx-auto mb-6 h-20 w-auto" onerror="this.src='https.placehold.co/100x100/e2e8f0/64748b?text=Logo'; this.onerror=null;">
+            <div class="bg-white p-6 sm:p-10 rounded-2xl shadow-2xl">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTo8y1TczYtwOx2zeS3RJVtM6Eayy6CQZuf6Q&s" alt="Logo Shinpo" class="mx-auto mb-6 h-20 w-auto" onerror="this.src='https://placehold.co/100x100/e2e8f0/64748b?text=Logo'; this.onerror=null;">
                 <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-2">Sistem Inventaris</h1>
                 <p class="text-slate-500 mb-8 text-lg">Silakan pilih peran Anda.</p>
                 <div class="space-y-4">
@@ -126,28 +130,31 @@
         </div>
 
         <!-- Admin View -->
-        <div id="admin-view" class="hidden w-full max-w-6xl mx-auto p-4 md:p-6">
-            <div class="flex justify-between items-center mb-8 relative">
-                 <h1 class="text-4xl font-extrabold text-slate-900 text-center w-full tracking-tight">Dashboard Admin</h1>
-                 <button id="admin-logout-btn" class="absolute right-0 bg-red-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-red-700 transition-colors shadow-md hover:shadow-lg transform hover:scale-105">Keluar</button>
+        <div id="admin-view" class="hidden w-full max-w-6xl mx-auto p-2 sm:p-4 md:p-6">
+            <div class="flex justify-between items-center mb-6 sm:mb-8 relative">
+                 <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 text-center w-full tracking-tight">Dashboard Admin</h1>
+                 <button id="admin-logout-btn" class="absolute top-0 right-0 sm:top-auto bg-red-600 text-white font-semibold py-2 px-3 sm:px-5 rounded-lg hover:bg-red-700 transition-colors shadow-md hover:shadow-lg transform hover:scale-105">
+                     <span class="hidden sm:inline">Keluar</span>
+                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sm:hidden"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                 </button>
             </div>
             
             <!-- Form for adding/editing items -->
-            <div class="bg-white p-8 rounded-2xl shadow-xl mb-8 border border-slate-200">
+            <div class="bg-white p-4 sm:p-8 rounded-2xl shadow-xl mb-8 border border-slate-200">
                 <h2 id="form-title" class="text-2xl font-bold text-slate-800 mb-6">Tambah Barang Baru</h2>
                 <form id="item-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <input type="hidden" id="item-id">
                     <div>
                         <label for="kode-barang" class="block text-sm font-medium text-slate-700 mb-2">Kode Barang</label>
-                        <input type="text" id="kode-barang" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition focus:bg-slate-50">
+                        <input type="text" id="kode-barang" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition focus:bg-slate-50 uppercase">
                     </div>
                     <div>
                         <label for="nama-barang" class="block text-sm font-medium text-slate-700 mb-2">Nama Barang</label>
-                        <input type="text" id="nama-barang" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition focus:bg-slate-50">
+                        <input type="text" id="nama-barang" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition focus:bg-slate-50 uppercase">
                     </div>
                     <div class="md:col-span-2">
                         <label for="permasalahan" class="block text-sm font-medium text-slate-700 mb-2">Permasalahan</label>
-                        <textarea id="permasalahan" rows="4" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition focus:bg-slate-50"></textarea>
+                        <textarea id="permasalahan" rows="4" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition focus:bg-slate-50 uppercase"></textarea>
                     </div>
                     <div class="md:col-span-2">
                         <label for="gambar-barang" class="block text-sm font-medium text-slate-700 mb-2">Gambar Barang</label>
@@ -162,36 +169,42 @@
             </div>
 
             <!-- List of items -->
-            <div id="item-list-container" class="bg-white p-8 rounded-2xl shadow-xl border border-slate-200">
-                 <h2 class="text-2xl font-bold text-slate-800 mb-6">Daftar Barang Bermasalah</h2>
-                 <div id="item-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Menggunakan desain list container Anda -->
+            <div id="item-list-container" class="bg-gradient-to-br from-indigo-100 via-rose-100 to-sky-200 backdrop-blur-md p-10 sm:p-12 rounded-3xl shadow-3xl border border-white/50">
+                <h2 class="text-4xl font-extrabold text-slate-800 drop-shadow-lg mb-8 text-center tracking-wide">
+                    Daftar Barang Bermasalah
+                </h2>
+
+                <div id="item-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <!-- Item cards will be injected here -->
-                    <div id="loading-spinner-admin" class="md:col-span-2 lg:col-span-3 text-center py-10 flex flex-col items-center">
-                        <div class="spinner mb-4"></div>
-                        <p class="text-slate-500">Menghubungkan ke database...</p>
+                    <div id="loading-spinner-admin" class="md:col-span-2 lg:col-span-3 text-center py-12 flex flex-col items-center">
+                    <div class="spinner mb-4"></div>
+                    <p class="text-slate-800 font-semibold text-lg">Menghubungkan ke database...</p>
                     </div>
-                 </div>
+                </div>
             </div>
+            <!-- AKHIR BAGIAN PENGGANTIAN -->
+
         </div>
         
         <!-- Operator View -->
-        <div id="operator-view" class="hidden w-full max-w-6xl mx-auto p-4 md:p-6">
+        <div id="operator-view" class="hidden w-full max-w-6xl mx-auto p-2 sm:p-4 md:p-6">
             <!-- Header -->
-            <div class="flex justify-between items-center mb-8 relative">
-                <h1 class="text-4xl font-extrabold text-slate-900 text-center w-full tracking-tight">
+            <div class="flex justify-between items-center mb-6 sm:mb-8 relative">
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 text-center w-full tracking-tight">
                     Cari Barang Bermasalah
                 </h1>
-                <button id="operator-logout-btn" title="Bersihkan Pencarian" class="absolute right-0 bg-amber-500 text-white font-semibold p-3 rounded-lg hover:bg-amber-600 shadow-md hover:shadow-lg transition-all transform hover:scale-105">
+                <button id="operator-logout-btn" title="Bersihkan Pencarian" class="absolute top-0 right-0 sm:top-auto bg-amber-500 text-white font-semibold p-2 sm:p-3 rounded-lg hover:bg-amber-600 shadow-md hover:shadow-lg transition-all transform hover:scale-105">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
                 </button>
             </div>
 
             <!-- Search Section -->
-            <div class="bg-gradient-to-r from-indigo-50 to-white p-8 rounded-2xl shadow-xl border border-indigo-100 mb-10">
+            <div class="bg-gradient-to-r from-indigo-50 to-white p-4 sm:p-8 rounded-2xl shadow-xl border border-indigo-100 mb-10">
                 <h2 class="text-2xl font-bold text-indigo-700 mb-3">Formulir Pencarian Barang</h2>
                 <p class="text-slate-600 mb-5">Masukkan <span class="font-semibold text-indigo-600">kode barang</span> untuk melihat detail permasalahan.</p>
                 <div class="flex flex-col md:flex-row gap-4">
-                    <input type="text" id="search-input" placeholder="Ketik Kode Barang..." class="flex-1 w-full px-5 py-3 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white placeholder-slate-400 transition">
+                    <input type="text" id="search-input" placeholder="Ketik Kode Barang..." class="flex-1 w-full px-5 py-3 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white placeholder-slate-400 transition uppercase">
                     <button id="search-btn" class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold py-3 px-8 rounded-lg hover:from-violet-600 hover:to-indigo-600 shadow-md transition-transform transform hover:scale-105 w-full md:w-auto">Cari</button>
                 </div>
             </div>
@@ -201,24 +214,19 @@
                 <!-- Hasil pencarian akan muncul di sini -->
             </div>
 
-            <!-- Item List Section -->
-            <section id="operator-item-list-container" class="bg-white p-8 rounded-2xl shadow-xl border border-slate-200 my-10">
-                <!-- Header -->
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                    <h2 class="text-3xl font-bold text-slate-800 flex items-center gap-3">
-                        Daftar Semua Barang
-                    </h2>
-                </div>
+            <section id="operator-item-list-container" class="bg-gradient-to-br from-indigo-100 via-rose-100 to-sky-200 backdrop-blur-md p-10 sm:p-12 rounded-3xl shadow-3xl border border-white/50 my-10">
+              <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+                <h2 class="text-4xl font-extrabold text-slate-800 drop-shadow-lg tracking-wide text-center sm:text-left">
+                  Daftar Semua Barang Bermasalah
+                </h2>
+              </div>
 
-                <!-- Item Grid -->
-                <div id="operator-item-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    <!-- Loading Spinner -->
-                    <div id="loading-spinner-operator" class="col-span-full text-center py-16 flex flex-col items-center">
-                        <div class="spinner mb-4"></div>
-                        <p class="text-slate-500 text-sm tracking-wide">Menghubungkan ke database...</p>
-                    </div>
-                    <!-- Item Cards Akan Muncul Di Sini -->
+              <div id="operator-item-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <div id="loading-spinner-operator" class="col-span-full text-center py-16 flex flex-col items-center animate-fade-in">
+                  <div class="spinner mb-5"></div>
+                  <p class="text-slate-700 font-semibold text-lg tracking-wide">Menghubungkan ke database...</p>
                 </div>
+              </div>
             </section>
         </div>
 
@@ -451,14 +459,21 @@
             if (error) {
                 console.error('Error fetching items:', error);
                 const errorMsg = `<p class="text-red-500">Gagal mengambil data: ${error.message}</p>`;
-                loadingSpinnerAdmin.innerHTML = errorMsg;
-                loadingSpinnerOperator.innerHTML = errorMsg;
+                // PERBAIKAN: Sesuaikan warna teks error spinner
+                if (loadingSpinnerAdmin && loadingSpinnerAdmin.querySelector('p')) {
+                    loadingSpinnerAdmin.querySelector('p').classList.remove('text-slate-800'); // Hapus warna lama jika ada
+                    loadingSpinnerAdmin.querySelector('p').classList.add('text-red-500'); // Tambah warna error
+                    loadingSpinnerAdmin.querySelector('p').textContent = `Gagal mengambil data: ${error.message}`;
+                    if(loadingSpinnerAdmin.querySelector('.spinner')) loadingSpinnerAdmin.querySelector('.spinner').classList.add('hidden');
+                }
+
+                if(loadingSpinnerOperator) loadingSpinnerOperator.innerHTML = errorMsg;
             } else {
                 items = data || [];
                 renderAdminList();
                 renderOperatorList();
-                loadingSpinnerAdmin.classList.add('hidden');
-                loadingSpinnerOperator.classList.add('hidden');
+                if(loadingSpinnerAdmin) loadingSpinnerAdmin.classList.add('hidden');
+                if(loadingSpinnerOperator) loadingSpinnerOperator.classList.add('hidden');
             }
         }
         
@@ -485,7 +500,11 @@
                         
                         switch (payload.eventType) {
                             case 'INSERT':
-                                items.push(payload.new);
+                                // PERBAIKAN: Cek dulu apakah item sudah ada di cache
+                                const exists = items.some(item => item.id.toString() === payload.new.id.toString());
+                                if (!exists) {
+                                    items.push(payload.new);
+                                }
                                 break;
                             case 'UPDATE':
                                 const updatedId = payload.new.id.toString();
@@ -554,24 +573,30 @@
         }
         
         async function addItem(itemData) {
-            if (!supabase) return;
+            if (!supabase) return null;
             try {
-                const { error } = await supabase.from('items').insert([itemData]);
+                // PERBAIKAN: Tambahkan .select() untuk mengembalikan data baru
+                const { data, error } = await supabase.from('items').insert([itemData]).select();
                 if (error) throw error;
+                return data[0]; // Kembalikan item baru
             } catch (e) {
                 console.error("Error adding document: ", e);
                 showConfirmation({ title: 'Error', message: `Gagal menyimpan data: ${e.message}`, okText: 'OK' });
+                return null;
             }
         }
         
         async function updateItem(id, itemData) {
-            if (!supabase) return;
+            if (!supabase) return null;
             try {
-                const { error } = await supabase.from('items').update(itemData).eq('id', id);
+                // PERBAIKAN: Tambahkan .select() untuk mengembalikan data yang diupdate
+                const { data, error } = await supabase.from('items').update(itemData).eq('id', id).select();
                 if (error) throw error;
+                return data[0]; // Kembalikan item yang diupdate
             } catch(e) {
                 console.error("Error updating document: ", e);
                 showConfirmation({ title: 'Error', message: `Gagal mengupdate data: ${e.message}`, okText: 'OK' });
+                return null;
             }
         }
         
@@ -611,40 +636,62 @@
         // --- RENDER FUNCTIONS ---
         function renderAdminList() {
             if (!itemListDiv) return;
-            itemListDiv.innerHTML = '';
+            itemListDiv.innerHTML = ''; // Kosongkan daftar sebelum render ulang
             
-            if (items.length === 0 && !loadingSpinnerAdmin.classList.contains('hidden')) {
-                // Jangan tampilkan apa-apa jika loading belum selesai
-            } else if (items.length === 0) {
-                itemListDiv.innerHTML = `<p class="text-slate-500 col-span-full text-center py-10">Belum ada data barang.</p>`;
-                return;
+            // Tampilkan spinner jika perlu (jika items kosong dan loading belum selesai)
+            const isLoading = items.length === 0 && loadingSpinnerAdmin && !loadingSpinnerAdmin.classList.contains('hidden');
+            if(loadingSpinnerAdmin) loadingSpinnerAdmin.classList.toggle('hidden', !isLoading);
+
+            if (items.length === 0 && !isLoading) {
+                 // PERBAIKAN: Sesuaikan teks "belum ada data" dengan desain container baru
+                 itemListDiv.innerHTML = `<p class="text-slate-800 font-semibold text-lg col-span-full text-center py-10">Belum ada data barang.</p>`;
+                 return;
             }
 
+
             items.forEach(item => {
-                const itemCard = `
-                    <div class="card-item group bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200 transition-all duration-300 ease-in-out hover:shadow-2xl hover:border-indigo-300 transform hover:-translate-y-1">
-                        <div class="overflow-hidden h-48">
-                            <img src="${item.gambar || 'https://placehold.co/400x300/e2e8f0/64748b?text=No+Image'}" alt="${item.nama}" class="w-full h-full object-cover cursor-pointer bg-slate-200 transition-transform duration-300 ease-in-out group-hover:scale-110" onclick="window.app.showImageModal('${item.gambar || ''}')" onerror="this.src='https://placehold.co/400x300/e2e8f0/64748b?text=No+Image'; this.onerror=null;">
+                // DESAIN KARTU BARU LEBIH KEREN
+                // PERBAIKAN BACKGROUND GRADIENT
+                const itemCardHTML = `
+                <div class="card-item group bg-gradient-to-br from-white via-white to-sky-50 rounded-2xl shadow-lg border border-slate-200/50 overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1.5 flex flex-col">
+                    <!-- Gambar Produk -->
+                    <div class="overflow-hidden h-48 relative">
+                        <img src="${item.gambar || 'https://placehold.co/400x250/e2e8f0/64748b?text=No+Image'}" alt="${item.nama || 'Gambar Barang'}" 
+                             class="w-full h-full object-cover cursor-pointer transition-transform duration-300 ease-in-out group-hover:scale-110" 
+                             onclick="window.app.showImageModal('${item.gambar || ''}')" 
+                             onerror="this.src='https://placehold.co/400x250/e2e8f0/64748b?text=No+Image'; this.onerror=null;">
+                         <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
+
+                    <!-- Isi Card -->
+                    <div class="p-5 flex flex-col flex-grow">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2 truncate group-hover:text-indigo-600 transition-colors">${item.nama || 'Nama Barang'}</h3>
+                        <p class="text-sm bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-full inline-block mb-4 w-max shadow-sm">
+                            Kode: ${item.kode || 'N/A'}
+                        </p>
+
+                        <!-- Kotak Masalah dengan warna biru -->
+                        <div class="bg-sky-50 border border-sky-200/80 text-sky-900 rounded-xl p-3 mb-5 shadow-inner min-h-[80px] h-24 overflow-y-auto flex-grow relative">
+                            <i class="fa-solid fa-triangle-exclamation absolute top-2 right-2 text-sky-400 opacity-70"></i>
+                            <p class="text-sm font-medium pr-4">${item.masalah || '-'}</p>
                         </div>
-                        <div class="p-5">
-                            <h3 class="font-semibold text-lg text-slate-800 mb-1 truncate">${item.nama || 'Nama Barang'}</h3>
-                            <span class="inline-block bg-indigo-100 text-indigo-700 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">Kode: ${item.kode || 'N/A'}</span>
-                            <p class="text-slate-500 text-sm break-words min-h-[60px] h-20 overflow-hidden">${item.masalah || '-'}</p>
-                            <div class="flex justify-end space-x-2 mt-4 border-t pt-4">
-                                <button class="edit-btn p-2 text-slate-500 hover:text-indigo-600 rounded-full hover:bg-indigo-50 transition-colors" data-id="${item.id}" title="Edit">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pointer-events-none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" class="pointer-events-none"></path></svg>
-                                </button>
-                                <button class="delete-btn p-2 text-slate-500 hover:text-red-600 rounded-full hover:bg-red-50 transition-colors" data-id="${item.id}" title="Hapus">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pointer-events-none"><polyline points="3 6 5 6 21 6" class="pointer-events-none"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" class="pointer-events-none"></path><line x1="10" y1="11" x2="10" y2="17" class="pointer-events-none"></line><line x1="14" y1="11" x2="14" y2="17" class="pointer-events-none"></line></svg>
-                                </button>
-                            </div>
+
+                        <!-- Tombol Aksi -->
+                        <div class="flex justify-end items-center gap-3 mt-auto border-t border-slate-200 pt-4">
+                            <button class="edit-btn p-2.5 rounded-full bg-slate-100 hover:bg-gradient-to-br hover:from-blue-100 hover:to-indigo-100 text-slate-600 hover:text-indigo-600 transition-all duration-300 transform hover:scale-110 shadow-sm hover:shadow-md" data-id="${item.id}" title="Edit">
+                                <i class="fa-solid fa-pen pointer-events-none text-sm"></i>
+                            </button>
+                            <button class="delete-btn p-2.5 rounded-full bg-red-100 hover:bg-gradient-to-br hover:from-red-100 hover:to-rose-100 text-red-600 transition-all duration-300 transform hover:scale-110 shadow-sm hover:shadow-md" data-id="${item.id}" title="Hapus">
+                                <i class="fa-solid fa-trash pointer-events-none text-sm"></i>
+                            </button>
                         </div>
                     </div>
+                </div>
                 `;
-                itemListDiv.innerHTML += itemCard;
+                // Menggunakan DOMParser untuk performa lebih baik
+                const cardElement = new DOMParser().parseFromString(itemCardHTML, 'text/html').body.firstChild;
+                itemListDiv.appendChild(cardElement);
             });
-
-            // Event listeners tidak lagi ditambahkan di sini, ditangani oleh listener global
         }
         
         function renderOperatorList() {
@@ -654,24 +701,41 @@
             if (items.length === 0 && !loadingSpinnerOperator.classList.contains('hidden')) {
                  // Jangan tampilkan apa-apa jika loading belum selesai
             } else if (items.length === 0) {
-                operatorItemListDiv.innerHTML = `<p class="text-slate-500 col-span-full text-center py-10">Belum ada data barang.</p>`;
+                operatorItemListDiv.innerHTML = `<p class="text-slate-700 font-semibold text-lg col-span-full text-center py-10">Belum ada data barang.</p>`; // Sesuaikan teks
                 return;
             }
 
             items.forEach(item => {
-                const itemCard = `
-                    <div class="card-item group bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200 transition-all duration-300 ease-in-out hover:shadow-2xl hover:border-indigo-300 transform hover:-translate-y-1">
-                        <div class="overflow-hidden h-48">
-                            <img src="${item.gambar || 'https://placehold.co/400x300/e2e8f0/64748b?text=No+Image'}" alt="${item.nama}" class="w-full h-full object-cover cursor-pointer bg-slate-200 transition-transform duration-300 ease-in-out group-hover:scale-110" onclick="window.app.showImageModal('${item.gambar || ''}')" onerror="this.src='https://placehold.co/400x300/e2e8f0/64748b?text=No+Image'; this.onerror=null;">
-                        </div>
-                        <div class="p-5">
-                            <h3 class="font-semibold text-lg text-slate-800 mb-1 truncate">${item.nama || 'Nama Barang'}</h3>
-                            <span class="inline-block bg-indigo-100 text-indigo-700 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">Kode: ${item.kode || 'N/A'}</span>
-                            <p class="text-slate-500 text-sm break-words min-h-[60px] h-20 overflow-hidden">${item.masalah || '-'}</p>
+                // DESAIN KARTU OPERATOR (MIRIP DENGAN ADMIN TAPI TANPA TOMBOL DAN HOVER MINIMAL)
+                 // PERBAIKAN BACKGROUND GRADIENT
+                 const itemCard = `
+                <div class="card-item group bg-gradient-to-br from-white via-white to-sky-50 rounded-2xl shadow-lg border border-slate-200/50 overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 flex flex-col">
+                    <!-- Gambar Produk -->
+                    <div class="overflow-hidden h-48 relative">
+                        <img src="${item.gambar || 'https://placehold.co/400x250/e2e8f0/64748b?text=No+Image'}" alt="${item.nama || 'Gambar Barang'}" 
+                             class="w-full h-full object-cover cursor-pointer transition-transform duration-300 ease-in-out group-hover:scale-105" 
+                             onclick="window.app.showImageModal('${item.gambar || ''}')" 
+                             onerror="this.src='https://placehold.co/400x250/e2e8f0/64748b?text=No+Image'; this.onerror=null;">
+                    </div>
+
+                    <!-- Isi Card -->
+                    <div class="p-5 flex flex-col flex-grow">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2 truncate">${item.nama || 'Nama Barang'}</h3>
+                        <p class="text-sm bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-full inline-block mb-4 w-max shadow-sm">
+                            Kode: ${item.kode || 'N/A'}
+                        </p>
+
+                        <!-- Kotak Masalah dengan warna biru -->
+                        <div class="bg-sky-50 border border-sky-200/80 text-sky-900 rounded-xl p-3 mb-5 shadow-inner min-h-[80px] h-24 overflow-y-auto flex-grow relative">
+                             <i class="fa-solid fa-triangle-exclamation absolute top-2 right-2 text-sky-400 opacity-70"></i>
+                            <p class="text-sm font-medium pr-4">${item.masalah || '-'}</p>
                         </div>
                     </div>
+                </div>
                 `;
-                operatorItemListDiv.innerHTML += itemCard;
+                // Perbaikan: Menggunakan DOMParser
+                const cardElement = new DOMParser().parseFromString(itemCard, 'text/html').body.firstChild;
+                operatorItemListDiv.appendChild(cardElement);
             });
         }
         
@@ -687,7 +751,12 @@
                                  <h3 class="font-bold text-3xl text-slate-900 mb-2">${item.nama || 'Nama Barang'}</h3>
                                  <span class="inline-block bg-indigo-100 text-indigo-700 text-sm font-semibold px-3 py-1 rounded-full mb-6 w-max">Kode: ${item.kode || 'N/A'}</span>
                                  <h4 class="font-semibold text-slate-800 text-lg mb-2">Detail Masalah:</h4>
-                                 <p class="text-slate-600 mt-2 text-base">${item.masalah || '-'}</p>
+                                 
+                                 <!-- PERUBAHAN DESAIN DI SINI -->
+                                 <div class="bg-sky-100 border border-sky-200 text-sky-900 p-4 rounded-lg mt-2"> <!-- Ubah warna di sini juga -->
+                                    <p class="text-base font-semibold">${item.masalah || '-'}</p>
+                                 </div>
+                                 <!-- AKHIR PERUBAHAN DESAIN -->
                              </div>
                          </div>
                      </div>
@@ -737,13 +806,14 @@
         }
         
         function handleSearch() {
-            const query = searchInput.value.trim();
+            const query = searchInput.value.trim().toUpperCase(); // <-- DIUBAH
             if (!query) {
                 // Jika query kosong, bersihkan pencarian (tampilkan semua item)
                 clearSearch();
                 return;
             }
-            const foundItem = items.find(item => item.kode.toLowerCase() === query.toLowerCase());
+            // Bandingkan UCASE dengan UCASE
+            const foundItem = items.find(item => item.kode.toUpperCase() === query); // <-- DIUBAH
             displaySearchResult(foundItem);
         }
         
@@ -760,9 +830,9 @@
             const file = imageInput.files[0];
 
             let itemData = {
-                kode: document.getElementById('kode-barang').value,
-                nama: document.getElementById('nama-barang').value,
-                masalah: document.getElementById('permasalahan').value,
+                kode: document.getElementById('kode-barang').value.toUpperCase(), // <-- DIUBAH
+                nama: document.getElementById('nama-barang').value.toUpperCase(), // <-- DIUBAH
+                masalah: document.getElementById('permasalahan').value.toUpperCase(), // <-- DIUBAH
                 // gambar akan ditambahkan nanti
             };
             
@@ -809,16 +879,28 @@
                         updatedData.gambar = existingItem.gambar; // Pertahankan URL lama
                     }
                     
-                    await updateItem(id, updatedData);
+                    const updatedItem = await updateItem(id, updatedData); // <-- PERBAIKAN: Tangkap data baru
+                    if (updatedItem) {
+                        // PERBAIKAN: Update cache lokal secara manual
+                        const updatedId = updatedItem.id.toString();
+                        items = items.map(item => item.id.toString() === updatedId ? updatedItem : item);
+                    }
 
                 } else {
                     // ADD NEW
                     if (imageUrl !== undefined) {
                         itemData.gambar = imageUrl;
                     }
-                    await addItem(itemData);
+                    const newItem = await addItem(itemData); // <-- PERBAIKAN: Tangkap data baru
+                    if (newItem) {
+                         // PERBAIKAN: Tambahkan ke cache lokal secara manual
+                        items.push(newItem);
+                    }
                 }
 
+                // PERBAIKAN: Panggil render dan reset SETELAH operasi sukses
+                renderAdminList();
+                renderOperatorList();
                 resetForm();
 
             } catch (error) {
@@ -992,16 +1074,32 @@
                 } catch(e) {
                     console.error("Supabase Initialization Error:", e);
                     const errorMsg = `<p class="text-red-500">Konfigurasi Supabase tidak valid: ${e.message}</p>`;
-                    loadingSpinnerAdmin.innerHTML = errorMsg;
-                    loadingSpinnerOperator.innerHTML = errorMsg;
+                    // PERBAIKAN: Sesuaikan warna teks error spinner admin
+                    if(loadingSpinnerAdmin) {
+                        loadingSpinnerAdmin.querySelector('p').classList.remove('text-slate-800'); // Hapus warna lama jika ada
+                        loadingSpinnerAdmin.querySelector('p').classList.add('text-red-500'); // Tambah warna error
+                        loadingSpinnerAdmin.querySelector('p').textContent = `Konfigurasi Supabase tidak valid: ${e.message}`;
+                        if(loadingSpinnerAdmin.querySelector('.spinner')) loadingSpinnerAdmin.querySelector('.spinner').classList.add('hidden');
+                    }
+                    if(loadingSpinnerOperator) {
+                        loadingSpinnerOperator.innerHTML = errorMsg;
+                    }
                     connectionStatus.textContent = "Gagal terhubung";
                     connectionStatus.classList.add('text-red-400');
                 }
             } else {
                 console.warn("Mode Demo. Harap konfigurasi Supabase.");
                 const demoMsg = `<p class="text-orange-500">Mode Demo. Harap konfigurasi Supabase.</p>`;
-                loadingSpinnerAdmin.innerHTML = demoMsg;
-                loadingSpinnerOperator.innerHTML = demoMsg;
+                 // PERBAIKAN: Sesuaikan warna teks demo spinner admin
+                 if(loadingSpinnerAdmin) {
+                    loadingSpinnerAdmin.querySelector('p').classList.remove('text-slate-800'); // Hapus warna lama jika ada
+                    loadingSpinnerAdmin.querySelector('p').classList.add('text-orange-500'); // Tambah warna demo
+                    loadingSpinnerAdmin.querySelector('p').textContent = `Mode Demo. Harap konfigurasi Supabase.`;
+                    if(loadingSpinnerAdmin.querySelector('.spinner')) loadingSpinnerAdmin.querySelector('.spinner').classList.add('hidden');
+                 }
+                if(loadingSpinnerOperator) {
+                    loadingSpinnerOperator.innerHTML = demoMsg;
+                }
                 connectionStatus.textContent = "Mode Demo";
                 connectionStatus.classList.add('text-orange-400');
             }
