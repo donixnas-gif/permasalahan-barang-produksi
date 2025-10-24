@@ -23,6 +23,7 @@
         /* Custom scrollbar for better aesthetics */
         ::-webkit-scrollbar {
             width: 8px;
+            height: 8px; /* Tambahkan untuk scrollbar horizontal */
         }
         ::-webkit-scrollbar-track {
             background: #f1f1f1;
@@ -210,7 +211,8 @@
             </div>
 
             <!-- Search Result -->
-            <div id="search-result" class="hidden mb-10">
+            <!-- PERUBAHAN: Tambahkan class flex untuk scrolling horizontal di HP -->
+            <div id="search-result" class="hidden mb-10 flex overflow-x-auto space-x-4 pb-4 md:block md:overflow-x-visible md:space-x-0 md:pb-0">
                 <!-- Hasil pencarian akan muncul di sini -->
             </div>
 
@@ -739,30 +741,40 @@
             });
         }
         
-        function displaySearchResult(item) {
-             if (item) {
-                 searchResultDiv.innerHTML = `
-                     <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
-                         <div class="md:flex">
-                            <div class="md:w-1/2">
-                                <img src="${item.gambar || 'https://placehold.co/600x400/e2e8f0/64748b?text=No+Image'}" alt="${item.nama}" class="w-full h-64 md:h-full object-cover cursor-pointer bg-slate-200" onclick="window.app.showImageModal('${item.gambar || ''}')" onerror="this.src='https://placehold.co/600x400/e2e8f0/64748b?text=No+Image'; this.onerror=null;">
+        // --- PERUBAHAN FUNGSI INI ---
+        function displaySearchResult(foundItems) { // Terima array, bukan 1 item
+             if (foundItems && foundItems.length > 0) { // Cek jika array tidak kosong
+                let html = ''; // Siapkan string HTML untuk menampung semua hasil
+
+                // Loop setiap item yang ditemukan
+                foundItems.forEach(item => {
+                    // Tambahkan HTML untuk setiap card ke string
+                    // PERUBAHAN: Ganti mb-6 dengan class responsive untuk scrolling horizontal
+                    html += `
+                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200 w-[90vw] flex-shrink-0 md:w-full md:flex-shrink-1 md:mb-6"> <!-- Lebar 90% viewport, jangan susut, di layar md kembali normal -->
+                        <div class="md:flex">
+                           <div class="md:w-1/2">
+                               <img src="${item.gambar || 'https://placehold.co/600x400/e2e8f0/64748b?text=No+Image'}" alt="${item.nama}" class="w-full h-64 md:h-full object-cover cursor-pointer bg-slate-200" onclick="window.app.showImageModal('${item.gambar || ''}')" onerror="this.src='https://placehold.co/600x400/e2e8f0/64748b?text=No+Image'; this.onerror=null;">
+                           </div>
+                           <div class="p-8 md:w-1/2 flex flex-col justify-center">
+                                <h3 class="font-bold text-3xl text-slate-900 mb-2">${item.nama || 'Nama Barang'}</h3>
+                                <span class="inline-block bg-indigo-100 text-indigo-700 text-sm font-semibold px-3 py-1 rounded-full mb-6 w-max">Kode: ${item.kode || 'N/A'}</span>
+                                <h4 class="font-semibold text-slate-800 text-lg mb-2">Detail Masalah:</h4>
+                                
+                                <div class="bg-sky-100 border border-sky-200 text-sky-900 p-4 rounded-lg mt-2">
+                                   <p class="text-base font-semibold">${item.masalah || '-'}</p>
+                                </div>
                             </div>
-                            <div class="p-8 md:w-1/2 flex flex-col justify-center">
-                                 <h3 class="font-bold text-3xl text-slate-900 mb-2">${item.nama || 'Nama Barang'}</h3>
-                                 <span class="inline-block bg-indigo-100 text-indigo-700 text-sm font-semibold px-3 py-1 rounded-full mb-6 w-max">Kode: ${item.kode || 'N/A'}</span>
-                                 <h4 class="font-semibold text-slate-800 text-lg mb-2">Detail Masalah:</h4>
-                                 
-                                 <!-- PERUBAHAN DESAIN DI SINI -->
-                                 <div class="bg-sky-100 border border-sky-200 text-sky-900 p-4 rounded-lg mt-2"> <!-- Ubah warna di sini juga -->
-                                    <p class="text-base font-semibold">${item.masalah || '-'}</p>
-                                 </div>
-                                 <!-- AKHIR PERUBAHAN DESAIN -->
-                             </div>
-                         </div>
-                     </div>
-                 `;
+                        </div>
+                    </div>
+                    `;
+                });
+                
+                searchResultDiv.innerHTML = html; // Set HTML gabungan
+
              } else {
-                 searchResultDiv.innerHTML = `<p class="text-center text-red-600 font-semibold bg-white p-8 rounded-2xl shadow-lg border border-red-200">Barang dengan kode tersebut tidak ditemukan.</p>`;
+                // Tampilkan pesan jika tidak ada hasil
+                 searchResultDiv.innerHTML = `<p class="text-center text-red-600 font-semibold bg-white p-8 rounded-2xl shadow-lg border border-red-200">Tidak ada barang yang ditemukan dengan awalan kode tersebut.</p>`;
              }
              
              searchResultDiv.classList.remove('hidden');
@@ -805,16 +817,20 @@
             }
         }
         
+        // --- PERUBAHAN FUNGSI INI ---
         function handleSearch() {
-            const query = searchInput.value.trim().toUpperCase(); // <-- DIUBAH
+            const query = searchInput.value.trim().toUpperCase();
             if (!query) {
                 // Jika query kosong, bersihkan pencarian (tampilkan semua item)
                 clearSearch();
                 return;
             }
-            // Bandingkan UCASE dengan UCASE
-            const foundItem = items.find(item => item.kode.toUpperCase() === query); // <-- DIUBAH
-            displaySearchResult(foundItem);
+            // GANTI DARI .find() (mencari 1) ke .filter() (mencari banyak)
+            // GANTI DARI === (sama persis) ke .startsWith() (dimulai dengan)
+            const foundItems = items.filter(item => item.kode.toUpperCase().startsWith(query));
+            
+            // Kirim array hasil filter ke fungsi display (fungsi display juga sudah diubah)
+            displaySearchResult(foundItems);
         }
         
         function clearSearch() {
