@@ -72,13 +72,38 @@
                 transform: rotate(360deg);
             }
         }
+        
+        /* --- CSS BARU UNTUK DOTS --- */
+        /* Sembunyikan scrollbar di search-result */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none; /* Safari and Chrome */
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        /* Styling untuk dot navigasi */
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #cbd5e1; /* bg-slate-300 */
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .dot.active {
+            background-color: #6366f1; /* bg-indigo-500 */
+            transform: scale(1.2);
+        }
+        /* --- AKHIR CSS BARU --- */
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800">
 
     <!-- Global Hamburger Button -->
     <button id="menu-btn-global" class="fixed top-4 left-4 sm:top-6 sm:left-6 p-2 rounded-lg text-slate-600 hover:bg-slate-200 z-40 transition-colors bg-white/50 backdrop-blur-sm shadow-sm border border-slate-200/50">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="3" y1="12" x2="21" y2="12"></line>
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -91,7 +116,7 @@
         <div class="flex justify-between items-center mb-8">
             <h2 class="text-xl font-bold text-white">Menu</h2>
             <button id="close-menu-btn" class="p-1 rounded-full hover:bg-slate-700 text-slate-400 hover:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24" 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
         </div>
         <nav>
@@ -211,10 +236,16 @@
             </div>
 
             <!-- Search Result -->
-            <!-- PERUBAHAN: Tambahkan class flex untuk scrolling horizontal di HP -->
-            <div id="search-result" class="hidden mb-10 flex overflow-x-auto space-x-4 pb-4 md:block md:overflow-x-visible md:space-x-0 md:pb-0">
+            <!-- PERUBAHAN: Tambahkan class 'no-scrollbar' dan ubah margin bottom -->
+            <div id="search-result" class="hidden mb-4 flex overflow-x-auto space-x-4 pb-4 md:block md:overflow-x-visible md:space-x-0 md:pb-0 no-scrollbar">
                 <!-- Hasil pencarian akan muncul di sini -->
             </div>
+            
+            <!-- DIV BARU: Untuk Dot Navigasi -->
+            <div id="search-dots" class="hidden justify-center space-x-2 mb-10 md:hidden">
+                <!-- Dots akan di-generate oleh JS -->
+            </div>
+
 
             <section id="operator-item-list-container" class="bg-gradient-to-br from-indigo-100 via-rose-100 to-sky-200 backdrop-blur-md p-10 sm:p-12 rounded-3xl shadow-3xl border border-white/50 my-10">
               <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
@@ -326,6 +357,7 @@
         let supabase;
         let items = []; // Cache lokal untuk data
         let realtimeChannel; // Untuk menyimpan channel realtime Supabase
+        let scrollTimer; // --- BARU: Timer untuk debounce scroll event ---
 
         // --- DOM Elements ---
         const roleSelectionView = document.getElementById('role-selection-view');
@@ -350,6 +382,7 @@
         const searchInput = document.getElementById('search-input');
         const searchBtn = document.getElementById('search-btn');
         const searchResultDiv = document.getElementById('search-result');
+        const searchDots = document.getElementById('search-dots'); // --- BARU ---
         const operatorItemListContainer = document.getElementById('operator-item-list-container');
         const imageModal = document.getElementById('image-modal');
         const modalImg = document.getElementById('modal-img');
@@ -741,7 +774,7 @@
             });
         }
         
-        // --- PERUBAHAN FUNGSI INI ---
+        // --- PERUBAHAN FUNGSI INI (ditambah logika dot) ---
         function displaySearchResult(foundItems) { // Terima array, bukan 1 item
              if (foundItems && foundItems.length > 0) { // Cek jika array tidak kosong
                 let html = ''; // Siapkan string HTML untuk menampung semua hasil
@@ -771,10 +804,44 @@
                 });
                 
                 searchResultDiv.innerHTML = html; // Set HTML gabungan
+                
+                // --- LOGIKA DOT BARU ---
+                searchDots.innerHTML = ''; // Kosongkan dots sebelumnya
+                
+                if (foundItems.length > 1) { // Hanya tampilkan dots jika item lebih dari 1
+                    searchDots.classList.remove('hidden');
+                    searchDots.classList.add('flex'); // Pastikan 'flex' untuk justify-center
+                    
+                    const cards = searchResultDiv.children;
+                    
+                    foundItems.forEach((item, index) => {
+                        const dot = document.createElement('span');
+                        dot.className = 'dot';
+                        dot.dataset.index = index;
+                        dot.addEventListener('click', () => {
+                            // Scroll ke card yang sesuai
+                            cards[index].scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'nearest',
+                                inline: 'start'
+                            });
+                        });
+                        searchDots.appendChild(dot);
+                    });
+                    
+                    updateActiveDot(); // Panggil sekali untuk set dot aktif pertama
+                    
+                } else {
+                    searchDots.classList.add('hidden');
+                    searchDots.classList.remove('flex');
+                }
+                // --- AKHIR LOGIKA DOT ---
 
              } else {
                 // Tampilkan pesan jika tidak ada hasil
                  searchResultDiv.innerHTML = `<p class="text-center text-red-600 font-semibold bg-white p-8 rounded-2xl shadow-lg border border-red-200">Tidak ada barang yang ditemukan dengan awalan kode tersebut.</p>`;
+                 searchDots.innerHTML = ''; // Kosongkan dots
+                 searchDots.classList.add('hidden');
              }
              
              searchResultDiv.classList.remove('hidden');
@@ -817,6 +884,47 @@
             }
         }
         
+        // --- FUNGSI BARU UNTUK DOTS ---
+        // Fungsi ini dijalankan saat user scroll/swipe
+        function handleScrollUpdateDots() {
+            // Debounce: Tunda eksekusi agar tidak berat
+            clearTimeout(scrollTimer);
+            scrollTimer = setTimeout(updateActiveDot, 100); // Tunggu 100ms setelah scroll berhenti
+        }
+        
+        // --- FUNGSI BARU UNTUK DOTS ---
+        // Logika untuk menentukan dot mana yang aktif
+        function updateActiveDot() {
+            if (!searchResultDiv || !searchDots) return;
+            
+            const cards = searchResultDiv.children;
+            const dots = searchDots.children;
+            if (dots.length === 0) return;
+
+            // Dapatkan posisi tengah container
+            const containerCenter = searchResultDiv.scrollLeft + searchResultDiv.offsetWidth / 2;
+            
+            let closestIndex = 0;
+            let smallestDistance = Infinity;
+
+            // Cari card yang paling dekat dengan tengah
+            for (let i = 0; i < cards.length; i++) {
+                const card = cards[i];
+                const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+                const distance = Math.abs(containerCenter - cardCenter);
+
+                if (distance < smallestDistance) {
+                    smallestDistance = distance;
+                    closestIndex = i;
+                }
+            }
+
+            // Update class 'active' pada dots
+            for (let i = 0; i < dots.length; i++) {
+                dots[i].classList.toggle('active', i === closestIndex);
+            }
+        }
+        
         // --- PERUBAHAN FUNGSI INI ---
         function handleSearch() {
             const query = searchInput.value.trim().toUpperCase();
@@ -837,6 +945,8 @@
             searchInput.value = '';
             searchResultDiv.innerHTML = '';
             searchResultDiv.classList.add('hidden');
+            searchDots.innerHTML = ''; // --- BARU: Bersihkan dots ---
+            searchDots.classList.add('hidden'); // --- BARU: Sembunyikan dots ---
             operatorItemListContainer.classList.remove('hidden');
         }
 
@@ -1055,6 +1165,9 @@
             searchInput.addEventListener('keyup', (e) => {
                 if (e.key === 'Enter') handleSearch();
             });
+            
+            // --- BARU: Tambah listener scroll untuk dots ---
+            searchResultDiv.addEventListener('scroll', handleScrollUpdateDots);
             
             // Modal Gambar
             closeModalBtn.addEventListener('click', hideImageModal);
