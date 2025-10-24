@@ -950,15 +950,16 @@
             operatorItemListContainer.classList.remove('hidden');
         }
 
+        // --- BUG FIX: FUNGSI INI DIUBAH ---
         async function handleFormSubmit(e) {
             e.preventDefault();
             const id = document.getElementById('item-id').value;
             const file = imageInput.files[0];
 
             let itemData = {
-                kode: document.getElementById('kode-barang').value.toUpperCase(), // <-- DIUBAH
-                nama: document.getElementById('nama-barang').value.toUpperCase(), // <-- DIUBAH
-                masalah: document.getElementById('permasalahan').value.toUpperCase(), // <-- DIUBAH
+                kode: document.getElementById('kode-barang').value.toUpperCase(),
+                nama: document.getElementById('nama-barang').value.toUpperCase(),
+                masalah: document.getElementById('permasalahan').value.toUpperCase(),
                 // gambar akan ditambahkan nanti
             };
             
@@ -967,14 +968,14 @@
 
             try {
                 let imageUrl = undefined;
-                let imagePath = undefined; // Path untuk delete nanti
+                // Path tidak perlu disimpan lagi di sini
+                // let imagePath = undefined; 
 
                 if (file) {
                     // 1. Upload gambar baru
                     console.log("Mengupload gambar baru...");
-                    const { url, path } = await uploadImage(file);
+                    const { url, path } = await uploadImage(file); // 'path' tidak digunakan, tapi biarkan
                     imageUrl = url;
-                    // Path tidak disimpan di DB, hanya URL
                 }
 
                 if (id) {
@@ -999,34 +1000,38 @@
                     if (imageUrl !== undefined) {
                         updatedData.gambar = imageUrl; // Update dengan URL baru
                     } else {
-                        // Jangan ubah gambar jika tidak ada file baru DAN imagePreview tidak dihapus
-                        // Jika user menghapus gambar (tapi tidak upload baru), kita harus tangani
-                        // Untuk saat ini, kita asumsikan jika tidak ada file, gambar lama dipertahankan
-                        updatedData.gambar = existingItem.gambar; // Pertahankan URL lama
+                        // Pertahankan URL lama jika tidak ada file baru
+                        updatedData.gambar = existingItem.gambar; 
                     }
                     
-                    const updatedItem = await updateItem(id, updatedData); // <-- PERBAIKAN: Tangkap data baru
-                    if (updatedItem) {
-                        // PERBAIKAN: Update cache lokal secara manual
-                        const updatedId = updatedItem.id.toString();
-                        items = items.map(item => item.id.toString() === updatedId ? updatedItem : item);
-                    }
+                    // PERBAIKAN: Panggil update, TAPI JANGAN update cache lokal secara manual
+                    await updateItem(id, updatedData);
+                    // HAPUS BLOK INI:
+                    // if (updatedItem) {
+                    //     const updatedId = updatedItem.id.toString();
+                    //     items = items.map(item => item.id.toString() === updatedId ? updatedItem : item);
+                    // }
 
                 } else {
                     // ADD NEW
                     if (imageUrl !== undefined) {
                         itemData.gambar = imageUrl;
                     }
-                    const newItem = await addItem(itemData); // <-- PERBAIKAN: Tangkap data baru
-                    if (newItem) {
-                         // PERBAIKAN: Tambahkan ke cache lokal secara manual
-                        items.push(newItem);
-                    }
+                    
+                    // PERBAIKAN: Panggil add, TAPI JANGAN update cache lokal secara manual
+                    await addItem(itemData);
+                    // HAPUS BLOK INI:
+                    // const newItem = await addItem(itemData);
+                    // if (newItem) {
+                    //      items.push(newItem);
+                    // }
                 }
 
-                // PERBAIKAN: Panggil render dan reset SETELAH operasi sukses
-                renderAdminList();
-                renderOperatorList();
+                // PERBAIKAN: Hapus render manual. Biarkan realtime listener yang bekerja.
+                // renderAdminList();
+                // renderOperatorList();
+                
+                // CUKUP reset form.
                 resetForm();
 
             } catch (error) {
